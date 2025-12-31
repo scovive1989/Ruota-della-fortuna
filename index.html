@@ -8,7 +8,6 @@
     <style>
         :root {
             --bg-color: #1b4332;
-            --cell-active: #ffffff;
             --accent: #ffeb3b;
             --text-dark: #1b4332;
         }
@@ -22,9 +21,8 @@
         .page { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
         .active { display: flex; }
 
-        h1 { color: var(--accent); margin-top: 40px; font-size: 2rem; }
+        h1 { color: var(--accent); margin-top: 40px; font-size: 2rem; text-align: center; }
         
-        /* BARRA DI RICERCA */
         #search-bar { 
             width: 90%; max-width: 350px; padding: 15px; margin: 20px 0; 
             border-radius: 12px; border: none; font-size: 1rem; 
@@ -33,14 +31,13 @@
 
         .levels-container { width: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 50px; }
         
-        /* PULSANTI LIVELLO */
         .menu-btn { 
             width: 90%; max-width: 350px; padding: 20px; background: var(--accent); 
             color: var(--text-dark); border: none; border-radius: 15px; 
             font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px #d4bc00;
+            text-transform: uppercase;
         }
 
-        /* GIOCO */
         .game-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .back-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 8px 15px; border-radius: 8px; }
 
@@ -59,10 +56,9 @@
         /* Apostrofo senza casella */
         .cell.apostrophe { 
             background: transparent !important; border: none !important; 
-            color: white !important; width: 10px; box-shadow: none !important;
+            color: white !important; width: auto; min-width: 10px; box-shadow: none !important;
         }
 
-        /* TASTIERA */
         #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; width: 100%; max-width: 450px; margin-top: auto; padding-bottom: 30px; }
         .key { padding: 15px 0; background: #e0e0e0; border: none; border-radius: 8px; font-weight: bold; color: var(--text-dark); font-size: 1rem; }
         .key:disabled { opacity: 0.3; }
@@ -81,7 +77,7 @@
     <div id="game-page" class="page">
         <div class="game-header">
             <button class="back-btn" onclick="tornaAlMenu()">← Menu</button>
-            <span id="display-category" style="color:var(--accent); font-weight: bold;"></span>
+            <span id="display-category" style="color:var(--accent); font-weight: bold; text-transform: uppercase;"></span>
         </div>
         <div id="board"></div>
         <div id="msg">Indovina la frase!</div>
@@ -92,8 +88,8 @@
         const databaseLivelli = [
             { categoria: "CINEMA", frase: "L'ULTIMO DEI MOICANI" },
             { categoria: "CUCINA", frase: "L'IMPEPATA DI COZZE" },
-            { categoria: "PROVERBI", frase: "L'UNIONE FA LA FORZA" },
             { categoria: "GEOGRAFIA", frase: "L'ETNA" },
+            { categoria: "PROVERBI", frase: "L'UNIONE FA LA FORZA" },
             { categoria: "CITTÀ", frase: "L'AQUILA" },
             { categoria: "STORIA", frase: "L'ANTICA ROMA" }
         ];
@@ -103,13 +99,13 @@
             const list = document.getElementById('levels-list');
             list.innerHTML = "";
             
-            databaseLivelli.forEach((liv, i) => {
-                if (liv.categoria.includes(query)) {
+            databaseLivelli.forEach((livelloSingolo, i) => {
+                if (livelloSingolo.categoria.includes(query)) {
                     const btn = document.createElement('button');
                     btn.className = 'menu-btn';
-                    // Sistemato: ora il testo appare correttamente
-                    btn.innerText = `LIV. : `;
-                    btn.onclick = () => avviaGioco(i);
+                    // CORREZIONE: Uso 'livelloSingolo.categoria' che esiste sicuramente
+                    btn.innerText = "LIV. " + (i + 1) + ": " + livelloSingolo.categoria;
+                    btn.onclick = function() { avviaGioco(i); };
                     list.appendChild(btn);
                 }
             });
@@ -150,8 +146,8 @@
                 const btn = document.createElement('button');
                 btn.className = 'key';
                 btn.innerText = lettra;
-                btn.onclick = () => {
-                    btn.disabled = true;
+                btn.onclick = function() {
+                    this.disabled = true;
                     document.querySelectorAll('.cell').forEach(cell => {
                         if(cell.dataset.letter === lettra) cell.classList.add('revealed');
                     });
@@ -166,9 +162,11 @@
         function tornaAlMenu() {
             document.getElementById('game-page').classList.remove('active');
             document.getElementById('menu-page').classList.add('active');
+            document.getElementById('search-bar').value = "";
+            filtraLivelli();
         }
 
-        // Popola il menu all'avvio
+        // Avvio iniziale
         filtraLivelli();
     </script>
 </body>
