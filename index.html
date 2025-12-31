@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>La Ruota della Fortuna</title>
+    <title>La Ruota della Fortuna - iPad Edition</title>
     <style>
         :root {
             --bg-color: #1b4332;
@@ -21,49 +21,73 @@
         .page { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
         .active { display: flex; }
 
-        h1 { color: var(--accent); margin-top: 40px; font-size: 2rem; text-align: center; }
+        h1 { color: var(--accent); margin-top: 20px; font-size: 2.5rem; text-align: center; }
         
         #search-bar { 
-            width: 90%; max-width: 350px; padding: 15px; margin: 20px 0; 
-            border-radius: 12px; border: none; font-size: 1rem; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            width: 80%; max-width: 500px; padding: 18px; margin: 20px 0; 
+            border-radius: 15px; border: none; font-size: 1.2rem; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .levels-container { width: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 50px; }
+        .levels-container { 
+            width: 100%; overflow-y: auto; display: flex; flex-wrap: wrap; /* Permette ai bottoni di stare affiancati su iPad */
+            justify-content: center; gap: 15px; padding: 20px;
+        }
         
         .menu-btn { 
-            width: 90%; max-width: 350px; padding: 20px; background: var(--accent); 
+            width: 90%; max-width: 300px; padding: 25px; background: var(--accent); 
             color: var(--text-dark); border: none; border-radius: 15px; 
-            font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px #d4bc00;
-            text-transform: uppercase;
+            font-size: 1.2rem; font-weight: bold; box-shadow: 0 5px #d4bc00;
+            text-transform: uppercase; cursor: pointer;
         }
 
-        .game-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 8px 15px; border-radius: 8px; }
+        /* GIOCO */
+        .game-header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .back-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 10px 20px; border-radius: 10px; font-size: 1.1rem; }
 
-        #board { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px 20px; width: 100%; margin: 20px 0; }
-        .word { display: flex; gap: 4px; align-items: center; }
+        #board { 
+            display: flex; flex-wrap: wrap; justify-content: center; 
+            gap: 20px 10px; width: 100%; max-width: 1100px; margin: auto; 
+        }
+        
+        .word { display: flex; gap: 6px; align-items: center; }
 
+        /* Celle adattive */
         .cell { 
-            width: 30px; height: 42px; background: white; border: 2px solid #081c15;
+            width: 35px; height: 50px; background: white; border: 2px solid #081c15;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; font-weight: bold; border-radius: 4px;
+            font-size: 24px; font-weight: bold; border-radius: 5px;
             color: transparent; transition: all 0.3s;
+        }
+
+        /* Ottimizzazione per iPad Orizzontale o Schermi Grandi */
+        @media (min-width: 768px) and (orientation: landscape) {
+            .cell { width: 50px; height: 70px; font-size: 36px; border-width: 3px; }
+            #board { gap: 40px 15px; }
+            .menu-btn { width: 300px; } /* Bottoni menu affiancati */
         }
 
         .cell.revealed { color: var(--text-dark) !important; background: var(--accent); }
 
-        /* Apostrofo senza casella */
         .cell.apostrophe { 
             background: transparent !important; border: none !important; 
-            color: white !important; width: auto; min-width: 10px; box-shadow: none !important;
+            color: white !important; width: auto; min-width: 15px; box-shadow: none !important;
         }
 
-        #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; width: 100%; max-width: 450px; margin-top: auto; padding-bottom: 30px; }
-        .key { padding: 15px 0; background: #e0e0e0; border: none; border-radius: 8px; font-weight: bold; color: var(--text-dark); font-size: 1rem; }
+        /* TASTIERA */
+        #keyboard { 
+            display: grid; grid-template-columns: repeat(11, 1fr); /* Più larga su iPad */
+            gap: 8px; width: 100%; max-width: 900px; margin: 20px auto; padding-bottom: 30px; 
+        }
+
+        @media (max-width: 767px) {
+            #keyboard { grid-template-columns: repeat(7, 1fr); } /* Stretta su iPhone */
+        }
+
+        .key { padding: 20px 0; background: #e0e0e0; border: none; border-radius: 10px; font-weight: bold; color: var(--text-dark); font-size: 1.2rem; cursor: pointer; }
         .key:disabled { opacity: 0.3; }
 
-        #msg { text-align: center; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+        #msg { text-align: center; color: var(--accent); font-weight: bold; font-size: 1.4rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -76,11 +100,11 @@
 
     <div id="game-page" class="page">
         <div class="game-header">
-            <button class="back-btn" onclick="tornaAlMenu()">← Menu</button>
-            <span id="display-category" style="color:var(--accent); font-weight: bold; text-transform: uppercase;"></span>
+            <button class="back-btn" onclick="tornaAlMenu()">← Esci</button>
+            <span id="display-category" style="color:var(--accent); font-weight: bold; text-transform: uppercase; font-size: 1.5rem;"></span>
         </div>
         <div id="board"></div>
-        <div id="msg">Indovina la frase!</div>
+        <div id="msg">Tocca una lettera!</div>
         <div id="keyboard"></div>
     </div>
 
@@ -91,7 +115,9 @@
             { categoria: "GEOGRAFIA", frase: "L'ETNA" },
             { categoria: "PROVERBI", frase: "L'UNIONE FA LA FORZA" },
             { categoria: "CITTÀ", frase: "L'AQUILA" },
-            { categoria: "STORIA", frase: "L'ANTICA ROMA" }
+            { categoria: "STORIA", frase: "L'ANTICA ROMA" },
+            { categoria: "FILM", frase: "L'INCREDIBILE HULK" },
+            { categoria: "CUCINA", frase: "L'INSALATA DI MARE" }
         ];
 
         function filtraLivelli() {
@@ -99,12 +125,11 @@
             const list = document.getElementById('levels-list');
             list.innerHTML = "";
             
-            databaseLivelli.forEach((livelloSingolo, i) => {
-                if (livelloSingolo.categoria.includes(query)) {
+            databaseLivelli.forEach((livello, i) => {
+                if (livello.categoria.includes(query)) {
                     const btn = document.createElement('button');
                     btn.className = 'menu-btn';
-                    // CORREZIONE: Uso 'livelloSingolo.categoria' che esiste sicuramente
-                    btn.innerText = "LIV. " + (i + 1) + ": " + livelloSingolo.categoria;
+                    btn.innerText = "LIV. " + (i + 1) + ": " + livello.categoria;
                     btn.onclick = function() { avviaGioco(i); };
                     list.appendChild(btn);
                 }
@@ -129,12 +154,10 @@
                     c.className = 'cell';
                     c.innerText = char;
                     c.dataset.letter = char;
-
                     if (char === "'") {
                         c.classList.add('apostrophe');
                         c.classList.add('revealed');
                     }
-                    
                     w.appendChild(c);
                 });
                 b.appendChild(w);
@@ -166,7 +189,6 @@
             filtraLivelli();
         }
 
-        // Avvio iniziale
         filtraLivelli();
     </script>
 </body>
